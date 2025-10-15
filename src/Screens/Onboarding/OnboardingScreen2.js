@@ -13,34 +13,34 @@ const { width } = Dimensions.get("window");
 const OnboardingScreen2 = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* --- Skip Button --- */}
+    
       <TouchableOpacity
         style={styles.skipButton}
-        onPress={() => navigation.replace("Login")} // 👈 skip directly
+        onPress={() => navigation.replace("Signin")} 
       >
         <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
 
-      {/* --- Title --- */}
-      <Text style={styles.title}>No Resume? No Problem</Text> {/* 🔹 CHANGED */}
+      
+      <Text style={styles.title}>No Resume? No Problem</Text> 
 
-      {/* --- Subtitle --- */}
+      
       <Text style={styles.subtitle}>
         Create a profile with ease and apply hassle-free. Elevate your job
         search without the need for a traditional resume. It's that simple!
-      </Text> {/* 🔹 CHANGED */}
+      </Text>
 
-      {/* --- Illustration --- */}
+      
       <Image
-        source={require("../../assets/Illustration2.png")} // 🔹 CHANGED
+        source={require("../../assets/Illustration2.png")}
         style={styles.image}
         resizeMode="contain"
       />
 
-      {/* --- Navigation Buttons --- */}
+      
       <View style={styles.navRow}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Onboarding1")}
+          onPress={() => navigation.goBack()}
           style={styles.navButton}
         >
           <Image
@@ -51,7 +51,7 @@ const OnboardingScreen2 = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("OnboardingScreen3")}
+          onPress={() => navigation.navigate("signin")}
           style={styles.navButton}
         >
           <Image
@@ -62,10 +62,10 @@ const OnboardingScreen2 = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* --- Pagination Dots --- */}
+      
       <View style={styles.dotsContainer}>
         <View style={styles.dot} />
-        <View style={[styles.dot, styles.activeDot]} /> {/* 🔹 active second dot */}
+        <View style={[styles.dot, styles.activeDot]} />
         <View style={styles.dot} />
       </View>
     </View>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
 
-  /* --- Skip Button --- */
+  
   skipButton: {
     position: "absolute",
     top: 50,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  /* --- Title & Subtitle --- */
+  
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 
-  /* --- Illustration --- */
+  
   image: {
     width: width * 0.95,
     height: width * 0.95,
@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
 
-  /* --- Navigation Buttons --- */
   navRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
     height: 45,
   },
 
-  /* --- Pagination Dots --- */
+
   dotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
