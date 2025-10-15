@@ -54,7 +54,7 @@ const ExploreScreen = () => {
    *  - bottomAssetText (string)
    */
   const JobCard = ({
-    title = "Senior Python Developer",
+    title = "Senior Python Developers1",
     companyLogo = require("../../assets/dubai.png"),
     companyName = "Verge Systems pvt ltd.",
     timeText = "5 hours ago",
