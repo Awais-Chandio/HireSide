@@ -55,6 +55,7 @@ const ExploreScreen = () => {
    */
   const JobCard = ({
     title = "Senior Python Developers1",
+    title = "Senior Python Developers",
     companyLogo = require("../../assets/dubai.png"),
     companyName = "Verge Systems pvt ltd.",
     timeText = "5 hours ago",
