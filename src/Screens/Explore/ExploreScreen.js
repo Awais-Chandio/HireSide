@@ -1,3 +1,4 @@
+
 // ExploreScreen.js
 import React, { useState } from "react";
 import {
@@ -54,8 +55,7 @@ const ExploreScreen = () => {
    *  - bottomAssetText (string)
    */
   const JobCard = ({
-    title = "Senior Python Developers1",
-    title = "Senior Python Developers",
+    title = "Senior Python Developer",
     companyLogo = require("../../assets/dubai.png"),
     companyName = "Verge Systems pvt ltd.",
     timeText = "5 hours ago",
