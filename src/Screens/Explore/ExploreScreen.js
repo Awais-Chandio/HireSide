@@ -1,5 +1,3 @@
-
-// ExploreScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -26,34 +24,477 @@ const styleConfig = {
   spacing: 12,
 };
 
+const COUNTRIES = [
+  "India",
+  "China",
+  "Pakistan",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States of America",
+  "Africa",
+  "Canada",
+];
+
+const SAMPLE_CITIES = [
+  "Karachi",
+  "Lahore",
+  "Islamabad",
+  "Dubai",
+  "London",
+  "New York",
+  "Toronto",
+  "Mumbai",
+  "Beijing",
+  "Shanghai",
+];
+
+
+const INDUSTRIES = [
+  "Healthcare and Social Assistance",
+  "Real Estate and Rental and Leasing",
+  "Arts, Entertainment and Recreation",
+  "Agriculture, Forestry, Fishing and Hunting",
+  "Educational Services",
+  "Finance and Insurance",
+];
+
 const ExploreScreen = () => {
   const [activeTab, setActiveTab] = useState("Jobs");
   const [isJobsModalVisible, setJobsModalVisible] = useState(false);
   const [isCompaniesModalVisible, setCompaniesModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
 
+
   const [easyApply, setEasyApply] = useState(false);
   const [nearbyJobs, setNearbyJobs] = useState(false);
+
+
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedCities, setSelectedCities] = useState([]);
+
+ 
+  const [isCountryModalVisible, setCountryModalVisible] = useState(false);
+  const [isCityModalVisible, setCityModalVisible] = useState(false);
+
+
+  const [countrySearchText, setCountrySearchText] = useState("");
+  const [selectedCountryLocal, setSelectedCountryLocal] = useState("");
+
+  const [citySearchText, setCitySearchText] = useState("");
+  const [selectedCitiesLocal, setSelectedCitiesLocal] = useState([]);
+
+ 
+  const [selectedIndustries, setSelectedIndustries] = useState([]); // parent
+  const [isIndustryModalVisible, setIndustryModalVisible] = useState(false);
+  const [industrySearchText, setIndustrySearchText] = useState("");
+  const [selectedIndustriesLocal, setSelectedIndustriesLocal] = useState([]);
 
   const openJobsModal = () => setJobsModalVisible(true);
   const closeJobsModal = () => setJobsModalVisible(false);
   const openCompaniesModal = () => setCompaniesModalVisible(true);
   const closeCompaniesModal = () => setCompaniesModalVisible(false);
 
-  /**
-   * JobCard component now accepts props so we can keep
-   * the first card exactly as before (by using defaults),
-   * and customize card 2 and 3 as the user requested.
-   *
-   * Props:
-   *  - title
-   *  - companyLogo
-   *  - companyName
-   *  - timeText
-   *  - locationText
-   *  - bottomAsset (require(...) image)
-   *  - bottomAssetText (string)
-   */
+ 
+  const removeSelectedCity = (city) =>
+    setSelectedCities((prev) => prev.filter((c) => c !== city));
+
+
+  const removeSelectedIndustry = (industry) =>
+    setSelectedIndustries((prev) => prev.filter((i) => i !== industry));
+
+
+ 
+  const FilterOptions = ({ onClose, mode = "jobs" }) => (
+    <View style={styles.filterContainer}>
+      <View style={styles.modalHeaderRow}>
+        <Text style={styles.modalTitle}>Filter Options</Text>
+        <TouchableOpacity onPress={onClose}>
+          <Text style={styles.closeButton}>✕</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.switchRow}>
+          <Text style={styles.switchLabel}>Easy Apply on HireSide</Text>
+          <Switch
+            value={easyApply}
+            onValueChange={setEasyApply}
+            trackColor={{ false: "#ccc", true: styleConfig.primaryColor }}
+          />
+        </View>
+
+        <View style={styles.switchRow}>
+          <Text style={styles.switchLabel}>Near by Jobs</Text>
+          <Switch
+            value={nearbyJobs}
+            onValueChange={setNearbyJobs}
+            trackColor={{ false: "#ccc", true: styleConfig.primaryColor }}
+          />
+        </View>
+
+       
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.sectionLabel}>Location</Text>
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <TouchableOpacity
+              style={[styles.dropdown, { flex: 1, marginRight: 8 }]}
+              onPress={() => {
+                setSelectedCountryLocal(selectedCountry || "");
+                setCountryModalVisible(true);
+              }}
+            >
+              <Text style={styles.dropdownText}>
+                {selectedCountry ? selectedCountry : "Select Country"}
+              </Text>
+              <Icon name="chevron-down" size={18} color="#555" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.dropdown, { flex: 1, marginLeft: 8 }]}
+              onPress={() => {
+                setSelectedCitiesLocal(selectedCities.slice());
+                setCityModalVisible(true);
+              }}
+            >
+              <Text style={styles.dropdownText}>Select City</Text>
+              <Icon name="chevron-down" size={18} color="#555" />
+            </TouchableOpacity>
+          </View>
+
+        
+          <View style={{ marginTop: 12 }}>
+            {selectedCities.length === 0 ? null : (
+              <View style={styles.chipRow}>
+                {selectedCities.map((c) => (
+                  <View key={c} style={styles.chip}>
+                    <Text style={styles.chipText}>{c}</Text>
+                    <TouchableOpacity
+                      onPress={() => removeSelectedCity(c)}
+                      style={{ marginLeft: 8 }}
+                    >
+                      <Text style={{ fontWeight: "700" }}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+
+
+        {mode === "companies" ? (
+          <View style={{ marginTop: 20 }}>
+           
+            <TouchableOpacity
+              style={[styles.dropdown, { marginTop: 12 }]}
+              onPress={() => {
+                setSelectedIndustriesLocal(selectedIndustries.slice());
+                setIndustryModalVisible(true);
+              }}
+            >
+              <Text style={styles.dropdownText}>
+                {selectedIndustries.length > 0
+                  ? `${selectedIndustries.length} selected`
+                  : "Select Industry"}
+              </Text>
+              <Icon name="chevron-down" size={18} color="#555" />
+            </TouchableOpacity>
+
+         
+            <View style={{ marginTop: 12 }}>
+              {selectedIndustries.length === 0 ? null : (
+                <View style={styles.chipRow}>
+                  {selectedIndustries.map((ind) => (
+                    <View key={ind} style={styles.chip}>
+                      <Text style={styles.chipText}>{ind}</Text>
+                      <TouchableOpacity
+                        onPress={() => removeSelectedIndustry(ind)}
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Text style={{ fontWeight: "700" }}>✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          </View>
+        ) : (
+     
+          <>
+            <View style={{ marginTop: 30, }}>
+              <Text style={styles.sectionLabel}>Date Posted</Text>
+           
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.sectionLabel}>Experienced Level</Text>
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.sectionLabel}>Job Type</Text>
+            </View>
+
+            <View style={{ marginTop: 30 }}>
+              <Text style={styles.sectionLabel}>Job Mode</Text>
+            </View>
+          </>
+        )}
+
+        <TouchableOpacity style={styles.showResultsBtn} onPress={() => {}}>
+          <Text style={styles.showResultsText}>Show 300 results</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      
+      <Modal
+        isVisible={isCountryModalVisible}
+        onBackdropPress={() => setCountryModalVisible(false)}
+        backdropOpacity={0.3}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.fullModalWrapper}
+      >
+        <View style={[styles.nestedModal, { height: "85%",paddingHorizontal:20,paddingTop:30 }]}>
+          <View style={styles.modalHeaderRow}>
+            <Text style={styles.modalTitle}>Select Country</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedCountry(selectedCountryLocal);
+                setCountryModalVisible(false);
+              }}
+            >
+              <Text style={[styles.closeButton, { fontSize: 16 }]}>Done</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ paddingHorizontal: 16 }}>
+            <View style={[styles.searchInputWrap, { height: 44 }]}>
+              <TextInput
+                placeholder="Search Country"
+                placeholderTextColor="#999"
+                style={[styles.searchInput, { paddingVertical: 8 }]}
+                value={countrySearchText}
+                onChangeText={setCountrySearchText}
+              />
+              <TouchableOpacity style={styles.searchIconWrap}>
+                <Icon name="search" size={18} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ marginTop: 12 }}>
+              {COUNTRIES.filter((c) =>
+                c.toLowerCase().includes(countrySearchText.toLowerCase())
+              ).map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  style={styles.listRow}
+                  onPress={() => {
+                    setSelectedCountryLocal(c);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.listText,
+                      selectedCountryLocal === c ? { fontWeight: "700" } : {},
+                    ]}
+                  >
+                    {c}
+                  </Text>
+                  {selectedCountryLocal === c && <Icon name="check" size={18} />}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+   
+      <Modal
+        isVisible={isCityModalVisible}
+        onBackdropPress={() => setCityModalVisible(false)}
+        backdropOpacity={0.3}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.fullModalWrapper}
+      >
+        <View style={[styles.nestedModal, { height: "88%",paddingHorizontal:20,paddingTop:30 }]}>
+          <View style={styles.modalHeaderRow}>
+            <Text style={styles.modalTitle}>Select City</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedCities(selectedCitiesLocal.slice());
+                setCityModalVisible(false);
+              }}
+            >
+              <Text style={[styles.closeButton, { fontSize: 16 }]}>Done</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ paddingHorizontal: 16 }}>
+            <View style={{ minHeight: 60, paddingVertical: 8 }}>
+              {selectedCitiesLocal.length === 0 ? (
+                <Text style={{ color: "#999" }}>No cities selected</Text>
+              ) : (
+                <View style={styles.chipRow}>
+                  {selectedCitiesLocal.map((c) => (
+                    <View key={c} style={styles.chip}>
+                      <Text style={styles.chipText}>{c}</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          setSelectedCitiesLocal((prev) =>
+                            prev.filter((x) => x !== c)
+                          )
+                        }
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Text style={{ fontWeight: "700" }}>✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            <View style={[styles.searchInputWrap, { height: 44, marginBottom: 12 }]}>
+              <TextInput
+                placeholder="Search City"
+                placeholderTextColor="#999"
+                style={[styles.searchInput, { paddingVertical: 8 }]}
+                value={citySearchText}
+                onChangeText={setCitySearchText}
+              />
+              <TouchableOpacity style={styles.searchIconWrap}>
+                <Icon name="search" size={18} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              {SAMPLE_CITIES.filter((c) =>
+                c.toLowerCase().includes(citySearchText.toLowerCase())
+              ).map((city) => {
+                const checked = selectedCitiesLocal.includes(city);
+                return (
+                  <TouchableOpacity
+                    key={city}
+                    style={styles.cityRow}
+                    onPress={() => {
+                      if (checked) {
+                        setSelectedCitiesLocal((prev) =>
+                          prev.filter((x) => x !== city)
+                        );
+                      } else {
+                        setSelectedCitiesLocal((prev) => [...prev, city]);
+                      }
+                    }}
+                  >
+                    <View style={[styles.checkbox, checked ? styles.checkboxChecked : {}]}>
+                      {checked && <Icon name="check" size={14} color="#fff" />}
+                    </View>
+                    <Text style={styles.listText}>{city}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+
+      <Modal
+        isVisible={isIndustryModalVisible}
+        onBackdropPress={() => setIndustryModalVisible(false)}
+        backdropOpacity={0.3}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        style={styles.fullModalWrapper}
+      >
+        <View style={[styles.nestedModal, { height: "88%" }]}>
+          <View style={styles.modalHeaderRow}>
+            <Text style={styles.modalTitle}>Select Industry</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedIndustries(selectedIndustriesLocal.slice());
+                setIndustryModalVisible(false);
+              }}
+            >
+              <Text style={[styles.closeButton, { fontSize: 16 }]}>Done</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ paddingHorizontal: 16 }}>
+            <View style={{ minHeight: 60, paddingVertical: 8 }}>
+              {selectedIndustriesLocal.length === 0 ? (
+                <Text style={{ color: "#999" }}>No industries selected</Text>
+              ) : (
+                <View style={styles.chipRow}>
+                  {selectedIndustriesLocal.map((ind) => (
+                    <View key={ind} style={styles.chip}>
+                      <Text style={styles.chipText}>{ind}</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          setSelectedIndustriesLocal((prev) =>
+                            prev.filter((x) => x !== ind)
+                          )
+                        }
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Text style={{ fontWeight: "700" }}>✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+
+
+            <View style={[styles.searchInputWrap, { height: 44, marginBottom: 12 }]}>
+              <TextInput
+                placeholder="Search Industry"
+                placeholderTextColor="#999"
+                style={[styles.searchInput, { paddingVertical: 8 }]}
+                value={industrySearchText}
+                onChangeText={setIndustrySearchText}
+              />
+              <TouchableOpacity style={styles.searchIconWrap}>
+                <Icon name="search" size={18} />
+              </TouchableOpacity>
+            </View>
+
+           
+            <ScrollView>
+              {INDUSTRIES.filter((i) =>
+                i.toLowerCase().includes(industrySearchText.toLowerCase())
+              ).map((ind) => {
+                const checked = selectedIndustriesLocal.includes(ind);
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    style={styles.cityRow}
+                    onPress={() => {
+                      if (checked) {
+                        setSelectedIndustriesLocal((prev) => prev.filter((x) => x !== ind));
+                      } else {
+                        setSelectedIndustriesLocal((prev) => [...prev, ind]);
+                      }
+                    }}
+                  >
+                    <View style={[styles.checkbox, checked ? styles.checkboxChecked : {}]}>
+                      {checked && <Icon name="check" size={14} color="#fff" />}
+                    </View>
+                    <Text style={styles.listText}>{ind}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+
+  
   const JobCard = ({
     title = "Senior Python Developer",
     companyLogo = require("../../assets/dubai.png"),
@@ -83,10 +524,6 @@ const ExploreScreen = () => {
         </View>
       </View>
 
-      {/* <View style={styles.salaryWrap}>
-        <Text style={styles.salaryText}>250k - 350k</Text>
-      </View> */}
-
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>03 Applicants</Text>
         <Text style={styles.dot}>•</Text>
@@ -114,7 +551,6 @@ const ExploreScreen = () => {
         </View>
       </View>
 
-      {/* If bottomAsset provided, show a divider (already present above) and the asset row */}
       {bottomAsset && (
         <>
           <View style={styles.cardDividerSmall} />
@@ -131,7 +567,7 @@ const ExploreScreen = () => {
     </View>
   );
 
-  // ✅ Updated renderCompanyGrid (unchanged except formatting)
+  
   const renderCompanyGrid = () => {
     const companies = [
       {
@@ -220,91 +656,22 @@ const ExploreScreen = () => {
     );
   };
 
-  const FilterOptions = ({ onClose }) => (
-    <View style={styles.filterContainer}>
-      <View style={styles.modalHeaderRow}>
-        <Text style={styles.modalTitle}>Filter Options</Text>
-        <TouchableOpacity onPress={onClose}>
-          <Text style={styles.closeButton}>✕</Text>
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>Easy Apply</Text>
-          <Switch
-            value={easyApply}
-            onValueChange={setEasyApply}
-            trackColor={{ false: "#ccc", true: styleConfig.primaryColor }}
-          />
-        </View>
-
-        <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>Nearby Jobs</Text>
-          <Switch
-            value={nearbyJobs}
-            onValueChange={setNearbyJobs}
-            trackColor={{ false: "#ccc", true: styleConfig.primaryColor }}
-          />
-        </View>
-
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.sectionLabel}>Country</Text>
-          <View style={styles.dropdown}>
-            <Text style={styles.dropdownText}>Pakistan</Text>
-            <Icon name="chevron-down" size={18} color="#555" />
-          </View>
-
-          <Text style={[styles.sectionLabel, { marginTop: 16 }]}>City</Text>
-          <View style={styles.dropdown}>
-            <Text style={styles.dropdownText}>Karachi</Text>
-            <Icon name="chevron-down" size={18} color="#555" />
-          </View>
-
-          <View style={styles.chipRow}>
-            <View style={styles.chip}>
-              <Text style={styles.chipText}>Lahore ✕</Text>
-            </View>
-            <View style={styles.chip}>
-              <Text style={styles.chipText}>Islamabad ✕</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.sectionLabel}>Date Posted</Text>
-          <View style={styles.dropdown}>
-            <Text style={styles.dropdownText}>Past Week</Text>
-            <Icon name="chevron-down" size={18} color="#555" />
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.showResultsBtn}>
-          <Text style={styles.showResultsText}>Show 300 Results</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
-  );
 
   return (
     <View style={[styles.screen, { backgroundColor: styleConfig.bgColor }]}>
-      {/* Top Buttons */}
+     
       <View style={styles.topButtonsRow}>
         <TouchableOpacity
           style={[
             styles.topButton,
-            activeTab === "Jobs"
-              ? styles.topButtonActive
-              : styles.topButtonInactive,
+            activeTab === "Jobs" ? styles.topButtonActive : styles.topButtonInactive,
           ]}
           onPress={() => setActiveTab("Jobs")}
         >
           <Text
             style={[
               styles.topButtonText,
-              activeTab === "Jobs"
-                ? styles.topButtonTextActive
-                : styles.topButtonTextInactive,
+              activeTab === "Jobs" ? styles.topButtonTextActive : styles.topButtonTextInactive,
             ]}
           >
             Jobs
@@ -314,18 +681,14 @@ const ExploreScreen = () => {
         <TouchableOpacity
           style={[
             styles.topButton,
-            activeTab === "Companies"
-              ? styles.topButtonActive
-              : styles.topButtonInactive,
+            activeTab === "Companies" ? styles.topButtonActive : styles.topButtonInactive,
           ]}
           onPress={() => setActiveTab("Companies")}
         >
           <Text
             style={[
               styles.topButtonText,
-              activeTab === "Companies"
-                ? styles.topButtonTextActive
-                : styles.topButtonTextInactive,
+              activeTab === "Companies" ? styles.topButtonTextActive : styles.topButtonTextInactive,
             ]}
           >
             Companies
@@ -333,7 +696,7 @@ const ExploreScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* JOBS VIEW */}
+ 
       {activeTab === "Jobs" && (
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.searchRow}>
@@ -346,55 +709,41 @@ const ExploreScreen = () => {
                 onChangeText={setSearchText}
               />
               <TouchableOpacity style={styles.searchIconWrap}>
-                <Image
-                  source={require("../../assets/search.png")}
-                  style={styles.searchIcon}
-                />
+                <Image source={require("../../assets/search.png")} style={styles.searchIcon} />
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.searchBarRect}
-              onPress={openJobsModal}
-            >
-              <Image
-                source={require("../../assets/searchbar.png")}
-                style={styles.searchBarImage}
-              />
+            <TouchableOpacity style={styles.searchBarRect} onPress={openJobsModal}>
+              <Image source={require("../../assets/searchbar.png")} style={styles.searchBarImage} />
             </TouchableOpacity>
           </View>
 
           <Text style={styles.sectionTitle}>Recent Jobs</Text>
 
-          {/* 1st card - unchanged */}
+      
           <JobCard />
 
-          {/* 2nd card - user requested changes */}
+         
           <JobCard
             title="User Experienced Designer"
-            // keep the same company logo/name layout as original (Microsoft.png) per instruction
             companyLogo={require("../../assets/figma.png")}
             companyName="Figma"
             timeText="2 months ago"
             locationText="Karachi, Sindh"
-            // bottomAsset={require("../../assets/figma.png")}
-            // bottomAssetText="Figma"
           />
 
-          {/* 3rd card - user requested changes */}
+         
           <JobCard
             title="Ethical Hacker"
             companyLogo={require("../../assets/diamond.png")}
             companyName="Verizon Infinity"
             timeText="5 months ago"
             locationText="USA, London"
-            // bottomAsset={require("../../assets/diamond.png")}
-            // bottomAssetText="Verizon Infinity"
           />
         </ScrollView>
       )}
 
-      {/* COMPANIES VIEW */}
+  
       {activeTab === "Companies" && (
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.searchRow}>
@@ -407,21 +756,12 @@ const ExploreScreen = () => {
                 onChangeText={setSearchText}
               />
               <TouchableOpacity style={styles.searchIconWrap}>
-                <Image
-                  source={require("../../assets/search.png")}
-                  style={styles.searchIcon}
-                />
+                <Image source={require("../../assets/search.png")} style={styles.searchIcon} />
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.searchBarRect}
-              onPress={openCompaniesModal}
-            >
-              <Image
-                source={require("../../assets/searchbar.png")}
-                style={styles.searchBarImage}
-              />
+            <TouchableOpacity style={styles.searchBarRect} onPress={openCompaniesModal}>
+              <Image source={require("../../assets/searchbar.png")} style={styles.searchBarImage} />
             </TouchableOpacity>
           </View>
 
@@ -430,7 +770,7 @@ const ExploreScreen = () => {
         </ScrollView>
       )}
 
-      {/* JOBS MODAL */}
+     
       <Modal
         isVisible={isJobsModalVisible}
         onBackdropPress={closeJobsModal}
@@ -439,17 +779,13 @@ const ExploreScreen = () => {
         animationOut="slideOutDown"
         style={styles.fullModalWrapper}
       >
-        <View
-          style={[
-            styles.fullModal,
-            { height: styleConfig.companiesModalHeight },
-          ]}
-        >
-          <FilterOptions onClose={closeJobsModal} />
+        <View style={[styles.fullModal, { height: styleConfig.companiesModalHeight }]}>
+        
+          <FilterOptions onClose={closeJobsModal} mode="jobs" />
         </View>
       </Modal>
 
-      {/* COMPANIES MODAL */}
+   
       <Modal
         isVisible={isCompaniesModalVisible}
         onBackdropPress={closeCompaniesModal}
@@ -458,13 +794,9 @@ const ExploreScreen = () => {
         animationOut="slideOutDown"
         style={styles.fullModalWrapper}
       >
-        <View
-          style={[
-            styles.fullModal,
-            { height: styleConfig.companiesModalHeight },
-          ]}
-        >
-          <FilterOptions onClose={closeCompaniesModal} />
+        <View style={[styles.fullModal, { height: styleConfig.companiesModalHeight }]}>
+        
+          <FilterOptions onClose={closeCompaniesModal} mode="companies" />
         </View>
       </Modal>
     </View>
@@ -487,14 +819,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: styleConfig.topButtonsHeight,
     borderRadius: 25,
-    marginHorizontal: 6,
+
     alignItems: "center",
     justifyContent: "center",
   },
   topButtonActive: { backgroundColor: styleConfig.primaryColor },
   topButtonInactive: {
     backgroundColor: "transparent",
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: "#d0d8e0",
   },
   topButtonText: { fontSize: 16, fontWeight: "600" },
@@ -565,7 +897,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 6,
     marginRight: 8,
-
   },
   tagText: { fontSize: 15, fontWeight: "400" },
   salaryWrap: { marginTop: 12 },
@@ -621,7 +952,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   assetImage: {
-    width:100,
+    width: 100,
     height: 40,
     marginVertical: 3,
     alignSelf: "center",
@@ -669,10 +1000,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
     height: 48,
+    backgroundColor: "#fff",
   },
   dropdownText: { color: "#333", fontSize: 15 },
   chipRow: { flexDirection: "row", flexWrap: "wrap", marginTop: 10 },
   chip: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#E8F0F7",
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -682,7 +1016,7 @@ const styles = StyleSheet.create({
   },
   chipText: { color: "#000", fontSize: 13 },
   showResultsBtn: {
-    marginTop: 10,
+    marginTop: 2,
     backgroundColor: styleConfig.primaryColor,
     borderRadius: 12,
     paddingVertical: 14,
@@ -690,4 +1024,43 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   showResultsText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
+
+  nestedModal: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: "hidden",
+  },
+  listRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  listText: { fontSize: 15 },
+  cityRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginRight: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxChecked: {
+    backgroundColor: styleConfig.primaryColor,
+    borderColor: styleConfig.primaryColor,
+  },
 });
