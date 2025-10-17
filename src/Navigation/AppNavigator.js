@@ -14,6 +14,7 @@ import CompleteProfile_03 from "../Screens/Profile/CompleteProfile_03"
 import CompleteProfile_04 from '../Screens/Profile/CompleteProfile_04';
 import CompleteProfile_05 from '../Screens/Profile/CompleteProfile_05';
 import MainTabs from "../Navigation/MainTab";
+import CompanyDetailsScreen from "../Screens/CompanyDetail/CompanyDetails"
 
 
 const Stack = createStackNavigator();
@@ -35,6 +36,8 @@ const AppNavigator = () => {
         <Stack.Screen  name="CompleteProfile04" component={CompleteProfile_04} />
         <Stack.Screen  name="CompleteProfile05" component={CompleteProfile_05} />
         <Stack.Screen  name="MainTabs" component={MainTabs} />
+         <Stack.Screen  name="CompanyDetails" component={CompanyDetailsScreen} />
+
 
         
 
